@@ -1,0 +1,93 @@
+name: starge-services
+
+services:
+  api-gateway:
+    image: ghcr.io/tarasdemchenkooo/starge-backend_api-gateway:${TAG}
+    env_file:
+      - ./env/api-gateway.env
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.backend.entrypoints=websecure
+      - traefik.http.routers.backend.rule=Host(`starge.xyz`) && PathPrefix(`/api`)
+      - traefik.http.routers.backend.tls=true
+      - traefik.http.routers.backend.certresolver=cloudflare
+    networks:
+      - traefik_network
+      - backend_network
+
+  payment-service:
+    image: ghcr.io/tarasdemchenkooo/starge-backend_payment-service:${TAG}
+    env_file:
+      - ./env/payment-service.env
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - traefik_network
+      - backend_network
+
+  ton-aggregator:
+    image: ghcr.io/tarasdemchenkooo/starge-backend_transaction-aggregator:${TAG}
+    env_file:
+      - ./env/ton-aggregator.env
+    depends_on:
+      kafka:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend_network
+
+  usdt-aggregator:
+    image: ghcr.io/tarasdemchenkooo/starge-backend_transaction-aggregator:${TAG}
+    env_file:
+      - ./env/usdt-aggregator.env
+    depends_on:
+      kafka:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend_network
+
+  ton-processor:
+    image: ghcr.io/tarasdemchenkooo/starge-backend_processing-service:${TAG}
+    env_file:
+      - ./env/ton-processor.env
+    depends_on:
+      kafka:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend_network
+
+  usdt-processor:
+    image: ghcr.io/tarasdemchenkooo/starge-backend_processing-service:${TAG}
+    env_file:
+      - ./env/usdt-processor.env
+    depends_on:
+      kafka:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend_network
+
+  notification-service:
+    image: ghcr.io/tarasdemchenkooo/starge-backend_notification-service:${TAG}
+    env_file:
+      - ./env/notification-service.env
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - backend_network
+
+networks:
+  traefik_network:
+    name: traefik_network
+    external: true
+  backend_network:
+    name: backend_network
+    external: true

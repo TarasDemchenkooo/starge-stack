@@ -29,7 +29,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - traefik_network
+      - backend_network
 
   redis:
     image: redis:7-alpine
@@ -44,7 +44,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - traefik_network
+      - backend_network
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
@@ -54,7 +54,7 @@ services:
     env_file:
       - ./env/infra.env
     networks:
-      - traefik_network
+      - backend_network
 
   kafka:
     image: confluentinc/cp-kafka:7.4.0
@@ -72,12 +72,14 @@ services:
       retries: 5
       start_period: 60s
     networks:
-      - traefik_network
+      - backend_network
 
 networks:
   traefik_network:
     name: traefik_network
-    driver: bridge
+    external: true
+  backend_network:
+    name: backend_network
     external: true
 
 volumes:
