@@ -1,6 +1,21 @@
 name: starge-infra
 
 services:
+  traefik:
+    image: traefik:v3.3
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.yaml:/etc/traefik/traefik.yaml:ro
+      - ./certs:/var/traefik/certs:rw
+    env_file:
+      - ./env/infra.env
+    networks:
+      - traefik_network
+
   postgres:
     image: postgres:15-alpine
     restart: unless-stopped
@@ -14,7 +29,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - backend_network
+      - traefik_network
 
   redis:
     image: redis:7-alpine
@@ -29,7 +44,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - backend_network
+      - traefik_network
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
@@ -39,7 +54,7 @@ services:
     env_file:
       - ./env/infra.env
     networks:
-      - backend_network
+      - traefik_network
 
   kafka:
     image: confluentinc/cp-kafka:7.4.0
@@ -48,21 +63,22 @@ services:
       - kafka_data:/var/lib/kafka/data
     env_file:
       - ./env/infra.env
+    depends_on:
+      - zookeeper
     healthcheck:
       test: ["CMD-SHELL", "kafka-topics", "--bootstrap-server", "kafka:9092", "--list"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    depends_on:
-      - zookeeper
     networks:
-      - backend_network
+      - traefik_network
 
 networks:
-  backend_network:
-    name: backend_network
+  traefik_network:
+    name: traefik_network
     driver: bridge
+    external: true
 
 volumes:
   postgres_data:
