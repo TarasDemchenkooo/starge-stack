@@ -20,6 +20,12 @@ entryPoints:
           scheme: https
   websecure:
     address: :443
+  postgres:
+    address: :5432
+    transport:
+      respondingTimeouts:
+        readTimeout: "60"
+        writeTimeout: "60"
 
 certificatesResolvers:
   cloudflare:
