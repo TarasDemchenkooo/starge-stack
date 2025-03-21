@@ -29,6 +29,8 @@ services:
       - traefik.tcp.routers.postgres.entrypoints=postgres
       - traefik.tcp.routers.postgres.rule=HostSNI(`*`)
       - traefik.tcp.services.postgres.loadbalancer.server.port=5432
+      - traefik.http.routers.postgres.tls=true
+      - traefik.http.routers.postgres.tls.certresolver=cloudflare
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U starge"]
       interval: 10s
