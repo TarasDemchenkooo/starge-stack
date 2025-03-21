@@ -25,7 +25,7 @@ certificatesResolvers:
   cloudflare:
     acme:
       email: ssl@starge.xyz
-      storage: /var/traefik/certs/acme.json
+      storage: /etc/traefik/certs/cloudflare-acme.json
       dnsChallenge:
         provider: cloudflare
         resolvers:

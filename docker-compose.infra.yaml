@@ -9,81 +9,81 @@ services:
       - 443:443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/traefik/certs:/etc/traefik/certs:rw
       - ./traefik.yaml:/etc/traefik/traefik.yaml:ro
-      - ./certs:/var/traefik/certs:rw
     env_file:
       - ./env/infra.env
     networks:
       - traefik_network
 
-#   postgres:
-#     image: postgres:15-alpine
-#     restart: unless-stopped
-#     volumes:
-#       - postgres_data:/data/postgres
-#     env_file:
-#       - ./env/infra.env
-#     healthcheck:
-#       test: ["CMD-SHELL", "pg_isready -U starge"]
-#       interval: 10s
-#       timeout: 5s
-#       retries: 5
-#     networks:
-#       - backend_network
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/data/postgres
+    env_file:
+      - ./env/infra.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U starge"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend_network
 
-#   redis:
-#     image: redis:7-alpine
-#     restart: unless-stopped
-#     volumes:
-#       - redis_data:/data
-#     env_file:
-#       - ./env/infra.env
-#     healthcheck:
-#       test: ["CMD", "redis-cli", "ping"]
-#       interval: 10s
-#       timeout: 5s
-#       retries: 5
-#     networks:
-#       - backend_network
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    env_file:
+      - ./env/infra.env
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend_network
 
-#   zookeeper:
-#     image: confluentinc/cp-zookeeper:7.4.0
-#     restart: unless-stopped
-#     volumes:
-#       - zookeeper_data:/var/lib/zookeeper/data
-#     env_file:
-#       - ./env/infra.env
-#     networks:
-#       - backend_network
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    restart: unless-stopped
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper/data
+    env_file:
+      - ./env/infra.env
+    networks:
+      - backend_network
 
-#   kafka:
-#     image: confluentinc/cp-kafka:7.4.0
-#     restart: unless-stopped
-#     volumes:
-#       - kafka_data:/var/lib/kafka/data
-#     env_file:
-#       - ./env/infra.env
-#     depends_on:
-#       - zookeeper
-#     healthcheck:
-#       test: ["CMD-SHELL", "kafka-topics", "--bootstrap-server", "kafka:9092", "--list"]
-#       interval: 30s
-#       timeout: 10s
-#       retries: 5
-#       start_period: 60s
-#     networks:
-#       - backend_network
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    restart: unless-stopped
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    env_file:
+      - ./env/infra.env
+    depends_on:
+      - zookeeper
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics", "--bootstrap-server", "kafka:9092", "--list"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - backend_network
 
 networks:
   traefik_network:
     name: traefik_network
     external: true
-#   backend_network:
-#     name: backend_network
-#     external: true
+  backend_network:
+    name: backend_network
+    external: true
 
-# volumes:
-#   postgres_data:
-#   redis_data:
-#   zookeeper_data:
-#   kafka_data:
+volumes:
+  postgres_data:
+  redis_data:
+  zookeeper_data:
+  kafka_data:
