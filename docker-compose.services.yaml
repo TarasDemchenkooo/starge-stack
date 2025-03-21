@@ -12,6 +12,9 @@ services:
       - traefik.http.services.api.loadbalancer.server.port=79
       - traefik.http.routers.api.tls=true
       - traefik.http.routers.api.tls.certresolver=cloudflare
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - traefik_network
       - backend_network
@@ -31,6 +34,8 @@ services:
       - traefik.http.routers.bot.tls=true
       - traefik.http.routers.bot.tls.certresolver=cloudflare
     depends_on:
+      postgres:
+        condition: service_healthy
       kafka:
         condition: service_healthy
     networks:
@@ -42,6 +47,8 @@ services:
     env_file:
       - ./env/ton-aggregator.env
     depends_on:
+      postgres:
+        condition: service_healthy
       kafka:
         condition: service_healthy
       redis:
@@ -54,6 +61,8 @@ services:
     env_file:
       - ./env/usdt-aggregator.env
     depends_on:
+      postgres:
+        condition: service_healthy
       kafka:
         condition: service_healthy
       redis:
@@ -90,6 +99,8 @@ services:
     env_file:
       - ./env/notification-service.env
     depends_on:
+      postgres:
+        condition: service_healthy
       kafka:
         condition: service_healthy
     networks:
