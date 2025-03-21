@@ -23,7 +23,10 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.bot.entrypoints=websecure
-      - traefik.http.routers.bot.rule=Host(`starge.xyz`) && Header(`X-Telegram-Bot-Api-Secret-Token`, `${BOT_API_SECRET}`)
+      - >
+        traefik.http.routers.bot.rule=Host(`starge.xyz`) &&
+        Path(`${BOT_SECRET_PATH}`) &&
+        Header(`X-Telegram-Bot-Api-Secret-Token`, `${BOT_API_SECRET}`)
       - traefik.http.services.bot.loadbalancer.server.port=78
       - traefik.http.routers.bot.tls=true
       - traefik.http.routers.bot.tls.certresolver=cloudflare
