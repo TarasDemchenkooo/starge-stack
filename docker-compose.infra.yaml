@@ -21,18 +21,19 @@ services:
     image: postgres:15-alpine
     restart: unless-stopped
     volumes:
-      - postgres_data:/data/postgres
+      - postgres_data:/var/lib/postgresql/data
     env_file:
       - ./env/infra.env
     labels:
       - traefik.enable=true
+      - traefik.docker.network=traefik_network
       - traefik.tcp.routers.postgres.entrypoints=postgres
-      - traefik.tcp.routers.postgres.rule=HostSNI(`*`)
+      - traefik.tcp.routers.postgres.rule=HostSNI(`starge.xyz`)
       - traefik.tcp.services.postgres.loadbalancer.server.port=5432
       - traefik.tcp.routers.postgres.tls=true
       - traefik.tcp.routers.postgres.tls.certresolver=cloudflare
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U starge"]
+      test: ["CMD-SHELL", "pg_isready -U starge_admin -d starge"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -79,7 +80,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 120s
     networks:
       - backend_network
 

@@ -7,14 +7,12 @@ services:
       - ./env/api-gateway.env
     labels:
       - traefik.enable=true
+      - traefik.docker.network=traefik_network
       - traefik.http.routers.api.entrypoints=websecure
       - traefik.http.routers.api.rule=Host(`starge.xyz`) && PathPrefix(`/api`)
       - traefik.http.services.api.loadbalancer.server.port=79
       - traefik.http.routers.api.tls=true
       - traefik.http.routers.api.tls.certresolver=cloudflare
-    depends_on:
-      postgres:
-        condition: service_healthy
     networks:
       - traefik_network
       - backend_network
@@ -25,6 +23,7 @@ services:
       - ./env/payment-service.env
     labels:
       - traefik.enable=true
+      - traefik.docker.network=traefik_network
       - traefik.http.routers.bot.entrypoints=websecure
       - >
         traefik.http.routers.bot.rule=Host(`starge.xyz`) &&
@@ -33,11 +32,6 @@ services:
       - traefik.http.services.bot.loadbalancer.server.port=78
       - traefik.http.routers.bot.tls=true
       - traefik.http.routers.bot.tls.certresolver=cloudflare
-    depends_on:
-      postgres:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
     networks:
       - traefik_network
       - backend_network
@@ -46,13 +40,6 @@ services:
     image: ghcr.io/tarasdemchenkooo/starge-backend_transaction-aggregator:${TAG}
     env_file:
       - ./env/ton-aggregator.env
-    depends_on:
-      postgres:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     networks:
       - backend_network
 
@@ -60,13 +47,6 @@ services:
     image: ghcr.io/tarasdemchenkooo/starge-backend_transaction-aggregator:${TAG}
     env_file:
       - ./env/usdt-aggregator.env
-    depends_on:
-      postgres:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     networks:
       - backend_network
 
@@ -74,11 +54,6 @@ services:
     image: ghcr.io/tarasdemchenkooo/starge-backend_processing-service:${TAG}
     env_file:
       - ./env/ton-processor.env
-    depends_on:
-      kafka:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     networks:
       - backend_network
 
@@ -86,11 +61,6 @@ services:
     image: ghcr.io/tarasdemchenkooo/starge-backend_processing-service:${TAG}
     env_file:
       - ./env/usdt-processor.env
-    depends_on:
-      kafka:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     networks:
       - backend_network
 
@@ -98,11 +68,6 @@ services:
     image: ghcr.io/tarasdemchenkooo/starge-backend_notification-service:${TAG}
     env_file:
       - ./env/notification-service.env
-    depends_on:
-      postgres:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
     networks:
       - backend_network
 
