@@ -1,0 +1,58 @@
+name: starge-monitoring
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - monitoring_network
+    command:
+      - --config.file=/etc/prometheus/prometheus.yaml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=7d
+
+  node-exporter:
+    image: prom/node-exporter:v1.9.0
+    restart: unless-stopped
+    volumes:
+      - /:/host:ro,rslave
+    networks:
+      - monitoring_network
+    command:
+      - --path.rootfs=/host
+
+  grafana:
+    image: grafana/grafana:11.5.2
+    restart: unless-stopped
+    volumes:
+      - grafana_data:/var/lib/grafana
+    env_file:
+      - ./env/monitoring.env
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik_network
+      - traefik.http.routers.grafana.entrypoints=websecure
+      - traefik.http.routers.grafana.rule=Host(`monitoring.starge.xyz`)
+      - traefik.http.services.grafana.loadbalancer.server.port=3000
+      - traefik.http.routers.grafana.tls=true
+      - traefik.http.routers.grafana.tls.certresolver=cloudflare
+    depends_on:
+      - prometheus
+    networks:
+      - traefik_network
+      - monitoring_network
+
+networks:
+  traefik_network:
+    name: traefik_network
+    external: true
+  monitoring_network:
+    name: monitoring_network
+    external: true
+
+volumes:
+  prometheus_data:
+  grafana_data:
