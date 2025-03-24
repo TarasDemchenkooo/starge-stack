@@ -5,7 +5,7 @@ services:
     image: prom/prometheus:v3.2.1
     restart: unless-stopped
     volumes:
-      - ./prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+      - ../prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
       - prometheus_data:/prometheus
     networks:
       - monitoring_network
@@ -29,6 +29,8 @@ services:
     restart: unless-stopped
     volumes:
       - grafana_data:/var/lib/grafana
+      - ../grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ../grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
     env_file:
       - ./env/monitoring.env
     labels:
