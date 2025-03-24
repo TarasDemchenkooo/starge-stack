@@ -31,6 +31,7 @@ services:
       - grafana_data:/var/lib/grafana
       - ../grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
       - ../grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ../grafana/provisioning/alerting:/etc/grafana/provisioning/alerting
     env_file:
       - ./env/monitoring.env
     labels:

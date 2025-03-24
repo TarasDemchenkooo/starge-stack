@@ -1,0 +1,31 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: Node Alerts
+    folder: Node
+    interval: 30s
+    rules:
+      - uid: cpu_usage
+        title: CPU Usage
+        condition: A
+        for: 5m
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              editorMode: code
+              expr: 100 * (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))) > 90
+              intervalMs: 15000
+              maxDataPoints: 43200
+        noDataState: NoData
+        execErrState: Error
+        labels:
+          category: system
+          severity: high
+        annotations:
+          summary: CPU usage is too high
+          description: CPU usage has exceeded 90% for the last 5 minutes
