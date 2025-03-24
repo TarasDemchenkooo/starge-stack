@@ -4,12 +4,8 @@ policies:
   - orgId: 1
     receiver: telegram
     group_by: [alertname]
-    routes:
-      - receiver: telegram
-        matchers:
-          - type: match
-            name: category
-            value: system
+    matchers:
+      - category = system
     group_wait: 15s
     group_interval: 20m
     repeat_interval: 2h

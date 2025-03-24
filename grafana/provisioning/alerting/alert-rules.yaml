@@ -4,23 +4,45 @@ groups:
   - orgId: 1
     name: Node Alerts
     folder: Node
-    interval: 30s
+    interval: 1m
     rules:
       - uid: cpu_usage
         title: CPU Usage
-        condition: A
+        condition: B
         for: 5m
         data:
           - refId: A
             datasourceUid: prometheus
+            relativeTimeRange:
+              from: 300
+              to: 0
             model:
-              datasource:
-                type: prometheus
-                uid: prometheus
               editorMode: code
-              expr: 100 * (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))) > 90
+              expr: 100 * (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m])))
               intervalMs: 15000
               maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [90]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [B]
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              expression: A
+              intervalMs: 15000
+              maxDataPoints: 43200
+              type: threshold
+              refId: B
         noDataState: NoData
         execErrState: Error
         labels:
@@ -28,4 +50,4 @@ groups:
           severity: high
         annotations:
           summary: CPU usage is too high
-          description: CPU usage has exceeded 90% for the last 5 minutes
+          description: CPU usage has exceeded 90% for the last 5 minutes\.
