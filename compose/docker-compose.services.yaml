@@ -9,7 +9,7 @@ services:
       - traefik.enable=true
       - traefik.docker.network=traefik_network
       - traefik.http.routers.api.entrypoints=websecure
-      - traefik.http.routers.api.rule=Host(`starge.xyz`) && PathPrefix(`/api`)
+      - traefik.http.routers.api.rule=Host(`api.starge.xyz`)
       - traefik.http.services.api.loadbalancer.server.port=79
       - traefik.http.routers.api.tls=true
       - traefik.http.routers.api.tls.certresolver=cloudflare
@@ -26,7 +26,7 @@ services:
       - traefik.docker.network=traefik_network
       - traefik.http.routers.bot.entrypoints=websecure
       - >
-        traefik.http.routers.bot.rule=Host(`starge.xyz`) &&
+        traefik.http.routers.bot.rule=Host(`api.starge.xyz`) &&
         Path(`${BOT_SECRET_PATH}`) &&
         Header(`X-Telegram-Bot-Api-Secret-Token`, `${BOT_API_SECRET}`)
       - traefik.http.services.bot.loadbalancer.server.port=78

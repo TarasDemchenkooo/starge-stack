@@ -5,7 +5,7 @@ services:
     image: prom/prometheus:v3.2.1
     restart: unless-stopped
     volumes:
-      - ../prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+      - ../configs/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
       - prometheus_data:/prometheus
     networks:
       - monitoring_network
@@ -24,14 +24,35 @@ services:
     command:
       - --path.rootfs=/host
 
+  loki:
+    image: grafana/loki:3.4.1
+    restart: unless-stopped
+    volumes:
+      - ../configs/loki.yaml:/etc/loki/loki.yaml
+      - loki_data:/loki
+    networks:
+      - monitoring_network
+    command: -config.file=/etc/loki/loki.yaml
+
+  promtail:
+    image: grafana/promtail:3.4.1
+    restart: unless-stopped
+    volumes:
+      - ../configs/promtail.yaml:/etc/promtail/promtail.yaml
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    depends_on:
+      - loki
+    networks:
+      - monitoring_network
+    command: -config.file=/etc/promtail/promtail.yaml
+
   grafana:
     image: grafana/grafana:11.5.2
     restart: unless-stopped
     volumes:
+      - ../grafana/provisioning:/etc/grafana/provisioning
       - grafana_data:/var/lib/grafana
-      - ../grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-      - ../grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
-      - ../grafana/provisioning/alerting:/etc/grafana/provisioning/alerting
     env_file:
       - ./env/monitoring.env
     labels:
@@ -44,6 +65,7 @@ services:
       - traefik.http.routers.grafana.tls.certresolver=cloudflare
     depends_on:
       - prometheus
+      - loki
     networks:
       - traefik_network
       - monitoring_network
@@ -59,3 +81,4 @@ networks:
 volumes:
   prometheus_data:
   grafana_data:
+  loki_data:
