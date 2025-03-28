@@ -29,7 +29,7 @@ services:
     restart: unless-stopped
     volumes:
       - ../configs/loki.yaml:/etc/loki/loki.yaml
-      - loki_data:/loki
+      - loki_data:/var/loki
     networks:
       - monitoring_network
     command: -config.file=/etc/loki/loki.yaml
