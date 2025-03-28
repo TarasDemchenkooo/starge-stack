@@ -6,6 +6,7 @@ services:
     env_file:
       - ./env/api-gateway.env
     labels:
+      - service=api-gateway
       - traefik.enable=true
       - traefik.docker.network=traefik_network
       - traefik.http.routers.api.entrypoints=websecure
@@ -22,6 +23,7 @@ services:
     env_file:
       - ./env/payment-service.env
     labels:
+      - service=payment-service
       - traefik.enable=true
       - traefik.docker.network=traefik_network
       - traefik.http.routers.bot.entrypoints=websecure
@@ -40,6 +42,8 @@ services:
     image: ghcr.io/tarasdemchenkooo/starge-backend_transaction-aggregator:${TAG}
     env_file:
       - ./env/ton-aggregator.env
+    labels:
+      - service=transaction-aggregator
     networks:
       - backend_network
 
@@ -47,6 +51,8 @@ services:
     image: ghcr.io/tarasdemchenkooo/starge-backend_transaction-aggregator:${TAG}
     env_file:
       - ./env/usdt-aggregator.env
+    labels:
+      - service=transaction-aggregator
     networks:
       - backend_network
 
@@ -54,6 +60,8 @@ services:
     image: ghcr.io/tarasdemchenkooo/starge-backend_processing-service:${TAG}
     env_file:
       - ./env/ton-processor.env
+    labels:
+      - service=processing-service
     networks:
       - backend_network
 
@@ -61,6 +69,8 @@ services:
     image: ghcr.io/tarasdemchenkooo/starge-backend_processing-service:${TAG}
     env_file:
       - ./env/usdt-processor.env
+    labels:
+      - service=processing-service
     networks:
       - backend_network
 
@@ -68,6 +78,8 @@ services:
     image: ghcr.io/tarasdemchenkooo/starge-backend_notification-service:${TAG}
     env_file:
       - ./env/notification-service.env
+    labels:
+      - service=notification-service
     networks:
       - backend_network
 

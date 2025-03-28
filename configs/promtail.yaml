@@ -20,20 +20,14 @@ scrape_configs:
           drop_counter_reason: internal_log
       - json:
           expressions:
-            output: message
-            context: context
-            level: level
             timestamp: time
-      - labels:
-          context:
-          level:
-      - output:
-          source: output
       - timestamp:
           source: timestamp
           format: RFC3339Nano
-          location: Europe/Moscow
+      - structured_metadata:
+          container_id:
     relabel_configs:
-      - source_labels: [__meta_docker_container_name]
-        regex: /(.*)
-        target_label: container
+      - source_labels: [__meta_docker_container_label_service]
+        target_label: service
+      - source_labels: [__meta_docker_container_id]
+        target_label: container_id
