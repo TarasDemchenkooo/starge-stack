@@ -4,7 +4,7 @@ server:
   http_listen_port: 3100
 
 common:
-  path_prefix: /var/loki
+  path_prefix: /etc/loki
   ring:
     instance_addr: 127.0.0.1
     kvstore:
@@ -13,10 +13,10 @@ common:
 
 storage_config:
   filesystem:
-    directory: /var/loki/chunks
+    directory: /etc/loki/chunks
   tsdb_shipper:
-    active_index_directory: /var/loki/tsdb-index
-    cache_location: /var/loki/tsdb-cache
+    active_index_directory: /etc/loki/tsdb-index
+    cache_location: /etc/loki/tsdb-cache
     cache_ttl: 24h
 
 schema_config:
@@ -28,3 +28,8 @@ schema_config:
     index:
       prefix: index_
       period: 24h
+
+limits_config:
+  allow_structured_metadata: true
+  volume_enabled: true
+  retention_period: 168h
