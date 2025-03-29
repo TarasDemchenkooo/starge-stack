@@ -10,21 +10,30 @@ positions:
 
 scrape_configs:
   - job_name: docker
+
     docker_sd_configs:
       - host: unix:///var/run/docker.sock
         refresh_interval: 5s
+
     pipeline_stages:
-      - drop:
-          expression: ^(?!.*include_service_log).*$
-          drop_counter_reason: internal_log
       - json:
           expressions:
-            timestamp: time
+            external_log:
+            timestamp:
+          drop_malformed: true
+      - template:
+          source: external_log
+          template: '{{ if eq .Value "true" }}true{{ else }}false{{ end }}'
+      - drop:
+          source: external_log
+          value: 'false'
+          drop_counter_reason: internal_log
       - timestamp:
           source: timestamp
           format: RFC3339Nano
       - structured_metadata:
           container_id:
+          
     relabel_configs:
       - source_labels: [__meta_docker_container_label_service]
         target_label: service
