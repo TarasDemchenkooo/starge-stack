@@ -22,6 +22,7 @@ scrape_configs:
       - json:
           expressions:
             external_log:
+            level:
             timestamp:
           drop_malformed: true
       - template:
@@ -31,6 +32,8 @@ scrape_configs:
           source: external_log
           value: 'false'
           drop_counter_reason: internal_log
+      - labels:
+          level:
       - timestamp:
           source: timestamp
           format: RFC3339Nano
@@ -42,3 +45,5 @@ scrape_configs:
         target_label: service
       - source_labels: [__meta_docker_container_id]
         target_label: container_id
+      - action: labeldrop
+        regex: service_name
