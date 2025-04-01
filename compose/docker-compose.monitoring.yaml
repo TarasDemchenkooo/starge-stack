@@ -62,7 +62,7 @@ services:
       - traefik.http.routers.grafana.rule=Host(`monitoring.starge.xyz`)
       - traefik.http.services.grafana.loadbalancer.server.port=3000
       - traefik.http.routers.grafana.tls=true
-      - traefik.http.routers.grafana.tls.certresolver=cloudflare
+      - traefik.http.routers.grafana.tls.certresolver=resolver
     depends_on:
       - prometheus
       - loki

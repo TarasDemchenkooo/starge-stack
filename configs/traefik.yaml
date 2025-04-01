@@ -28,12 +28,8 @@ entryPoints:
         writeTimeout: "60"
 
 certificatesResolvers:
-  cloudflare:
+  resolver:
     acme:
       email: ssl@starge.xyz
-      storage: /etc/traefik/certs/cloudflare-acme.json
-      dnsChallenge:
-        provider: cloudflare
-        resolvers:
-          - 1.1.1.1:53
-          - 8.8.8.8:53
+      storage: /etc/traefik/certs/acme.json
+      tlsChallenge: {}

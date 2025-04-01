@@ -14,7 +14,7 @@ services:
       - traefik.http.routers.api.rule=Host(`api.starge.xyz`)
       - traefik.http.services.api.loadbalancer.server.port=79
       - traefik.http.routers.api.tls=true
-      - traefik.http.routers.api.tls.certresolver=cloudflare
+      - traefik.http.routers.api.tls.certresolver=resolver
     networks:
       - traefik_network
       - backend_network
@@ -35,7 +35,7 @@ services:
         Header(`X-Telegram-Bot-Api-Secret-Token`, `${BOT_API_SECRET}`)
       - traefik.http.services.bot.loadbalancer.server.port=78
       - traefik.http.routers.bot.tls=true
-      - traefik.http.routers.bot.tls.certresolver=cloudflare
+      - traefik.http.routers.bot.tls.certresolver=resolver
     networks:
       - traefik_network
       - backend_network
